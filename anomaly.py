@@ -19,3 +19,13 @@ def detect_anomalies_zscore(data, threshold=2.5):
     
     return time_series, anomalies
 
+# Function to detect anomalies using Isolation Forest
+def detect_anomalies_isolation_forest(data, contamination=0.05):
+    time_series = np.array([np.sum(matrix) for matrix in data]).reshape(-1, 1)
+    model = IsolationForest(contamination=contamination, random_state=42)
+    model.fit(time_series)
+    anomaly_labels = model.predict(time_series)
+    anomalies = np.where(anomaly_labels == -1)[0]
+    
+    return time_series.flatten(), anomalies
+
