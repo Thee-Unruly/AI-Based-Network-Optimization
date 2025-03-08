@@ -1,8 +1,11 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
 from sklearn.ensemble import IsolationForest
 
+# Define the directory where traffic data is stored
+DATA_DIR = "traffic_data"
 
 def load_traffic_matrix(file_path):
     with open(file_path, 'r') as f:
@@ -20,17 +23,23 @@ def load_traffic_matrix(file_path):
 # Load all traffic matrices
 traffic_matrices = []
 for i in range(1, 25):
-    file_path = f'X{i:02d}'  # Formats as X01, X02, ..., X24
-    traffic_matrix = load_traffic_matrix(file_path)
-    
-    if traffic_matrix.shape == (12, 12):  # Ensure correct shape
-        traffic_matrices.append(traffic_matrix)
+    file_path = os.path.join(DATA_DIR, f'X{i:02d}')  # Formats as traffic_data/X01, X02, ..., X24
+    if os.path.exists(file_path):
+        traffic_matrix = load_traffic_matrix(file_path)
+        
+        if traffic_matrix.shape == (12, 12):  # Ensure correct shape
+            traffic_matrices.append(traffic_matrix)
+        else:
+            print(f"Skipping {file_path}, incorrect shape: {traffic_matrix.shape}")
     else:
-        print(f"Skipping {file_path}, incorrect shape: {traffic_matrix.shape}")
+        print(f"File not found: {file_path}")
 
 # Stack into a 3D array
-traffic_data = np.stack(traffic_matrices)
-print("Final traffic data shape:", traffic_data.shape)  # Should be (24, 12, 12)
+if traffic_matrices:
+    traffic_data = np.stack(traffic_matrices)
+    print("Final traffic data shape:", traffic_data.shape)  # Should be (24, 12, 12)
+else:
+    raise ValueError("No valid traffic matrices loaded!")
 
 # Function to detect anomalies using Z-score
 def detect_anomalies_zscore(data, threshold=2.5):
