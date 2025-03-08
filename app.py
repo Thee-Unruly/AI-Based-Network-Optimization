@@ -76,4 +76,24 @@ print(f"Traffic Bottleneck: Source Node {bottleneck_source_node}, Destination No
 #Visualize traffic matrices at different time steps
 for t in [0, 6, 12, 18]:  # Change these indices to explore different times
     plot_heatmap(traffic_data[t], t)
-    
+
+# Time Series Analysis
+#Sums up all traffic values at each time step.
+#Plots a line graph showing how traffic changes over time.
+#Helps identify peak congestion periods.
+
+# Aggregate total traffic per time step (sum of all 12x12 values)
+time_series_data = [np.sum(matrix) for matrix in traffic_data]
+
+# Create DataFrame
+df = pd.DataFrame({'Time Step': range(1, 25), 'Total Traffic': time_series_data})
+
+# Plot the trend
+plt.figure(figsize=(10, 5))
+sns.lineplot(x="Time Step", y="Total Traffic", data=df, marker="o", linestyle="-", color="b")
+plt.xlabel("Time Interval")
+plt.ylabel("Total Traffic Volume")
+plt.title("Traffic Volume Over Time")
+plt.grid()
+plt.show()
+
